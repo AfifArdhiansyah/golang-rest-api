@@ -2,7 +2,6 @@ package app
 
 import (
 	controllers "example/rest-api/app/controllers"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,15 +9,11 @@ import (
 func Router() *gin.Engine {
 	router := gin.Default()
 
-	getAlbum, err := controllers.GetAllAlbum()
-
-	if err != nil {
-		panic(err)
-	}
-
-	router.GET("/albums", func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, getAlbum)
-	})
+	router.GET("/albums", controllers.GetAllAlbum)
+	router.GET("/albums/:id", controllers.GetAlbum)
+	router.POST("/albums", controllers.CreateAlbum)
+	router.PUT("/albums/:id", controllers.UpdateAlbum)
+	router.DELETE("/albums/:id", controllers.DeleteAlbum)
 
 	return router
 }
