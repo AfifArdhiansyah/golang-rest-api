@@ -1,13 +1,14 @@
 package config
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func goDotEnvVariable(key string) string {
@@ -21,22 +22,16 @@ func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
-func ConnectDB() *sql.DB {
+func ConnectDB() *gorm.DB {
 	host := goDotEnvVariable("DB_HOST")
 	port := goDotEnvVariable("DB_PORT")
 	user := goDotEnvVariable("DB_USER")
 	password := goDotEnvVariable("DB_PASSWORD")
 	dbname := goDotEnvVariable("DB_NAME")
 	sslmode := goDotEnvVariable("DB_SSLMODE")
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s \n", host, port, user, password, dbname, sslmode)
 
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	// defer db.Close()
-
-	err = db.Ping()
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=Asia/Jakarta", host, user, password, dbname, port, sslmode)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
