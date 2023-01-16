@@ -8,4 +8,5 @@ import (
 func main() {
 	db := db.ConnectDB()
 	db.AutoMigrate(&models.Album{})
+	db.AutoMigrate(&models.Message{})
 }

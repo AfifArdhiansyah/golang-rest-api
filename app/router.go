@@ -15,5 +15,10 @@ func Router() *gin.Engine {
 	router.PUT("/albums/:id", controllers.UpdateAlbum)
 	router.DELETE("/albums/:id", controllers.DeleteAlbum)
 
+	router.GET("/ws", func(c *gin.Context) {
+		controllers.WsEndpoint(c.Writer, c.Request)
+	})
+	router.GET("/messages", controllers.GetAllMessage)
+
 	return router
 }
