@@ -20,5 +20,7 @@ func Router() *gin.Engine {
 	})
 	router.GET("/messages", controllers.GetAllMessage)
 
+	router.GET("/users", controllers.GetAllUsers)
+
 	return router
 }
