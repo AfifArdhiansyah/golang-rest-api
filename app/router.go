@@ -21,6 +21,8 @@ func Router() *gin.Engine {
 	router.GET("/messages", controllers.GetAllMessage)
 
 	router.GET("/users", controllers.GetAllUsers)
+	router.POST("/register", controllers.Register)
+	router.POST("/login", controllers.Login)
 
 	return router
 }
