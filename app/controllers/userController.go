@@ -13,6 +13,8 @@ import (
 type User models.User
 type RequestUser models.RequestUser
 
+var db = config.ConnectDB()
+
 // encrypt password
 func (u *User) HashPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -35,12 +37,21 @@ func (u *User) CheckPasswordHash(password string) error {
 
 func GetAllUsers(c *gin.Context) {
 	var users []User
-	db := config.ConnectDB()
 	err := db.Find(&users)
 	if err.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error.Error()})
 	}
 	c.IndentedJSON(http.StatusOK, users)
+}
+
+func GetProfile(c *gin.Context) {
+	var user User
+	username := c.Request.Header.Get("username")
+	err := db.Where("username = ?", username).First(&user)
+	if err.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error.Error()})
+	}
+	c.IndentedJSON(http.StatusOK, user)
 }
 
 func Register(c *gin.Context) {
@@ -53,7 +64,6 @@ func Register(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	db := config.ConnectDB()
 	err := db.Create(&user)
 	if err.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error.Error()})
@@ -68,7 +78,6 @@ func Login(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	db := config.ConnectDB()
 	record := db.Where("username = ?", request.Username).First(&user)
 	if record.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": record.Error.Error()})

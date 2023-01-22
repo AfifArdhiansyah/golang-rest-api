@@ -2,6 +2,7 @@ package app
 
 import (
 	controllers "example/rest-api/app/controllers"
+	middlewares "example/rest-api/app/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +24,11 @@ func Router() *gin.Engine {
 	router.GET("/users", controllers.GetAllUsers)
 	router.POST("/register", controllers.Register)
 	router.POST("/login", controllers.Login)
+
+	router.Use(middlewares.Auth())
+	{
+		router.GET("/profile", controllers.GetProfile)
+	}
 
 	return router
 }
