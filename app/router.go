@@ -10,6 +10,10 @@ import (
 func Router() *gin.Engine {
 	router := gin.Default()
 
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Hello World!"})
+	})
+
 	router.GET("/albums", controllers.GetAllAlbum)
 	router.GET("/albums/:id", controllers.GetAlbum)
 	router.POST("/albums", controllers.CreateAlbum)
