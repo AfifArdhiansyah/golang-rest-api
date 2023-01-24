@@ -86,7 +86,7 @@ func Login(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	tokenString, err := middlewares.GenerateToken(user.Username, user.Password)
+	tokenString, err := middlewares.GenerateToken(user.ID, user.Username, user.Password)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error})
 		return

@@ -5,6 +5,7 @@ import (
 	"example/rest-api/config"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -64,4 +65,43 @@ func GetAllMessage(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, messages)
+}
+
+func GetMessageByUser(c *gin.Context) {
+	var messages []Message
+
+	db := config.ConnectDB()
+
+	result := db.Where("user_id = ?", c.Request.Header.Get("id")).Find(&messages)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": result.Error.Error()})
+	}
+
+	c.IndentedJSON(http.StatusOK, messages)
+}
+
+func SendMessage(c *gin.Context) {
+	var message Message
+
+	id := c.Request.Header.Get("id")
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+	}
+	message.UserId = idInt
+
+	if err := c.ShouldBindJSON(&message); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	}
+
+	db := config.ConnectDB()
+
+	result := db.Create(&message)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": result.Error.Error()})
+	}
+
+	c.IndentedJSON(http.StatusOK, message)
 }

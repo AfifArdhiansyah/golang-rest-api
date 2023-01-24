@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -9,9 +10,10 @@ import (
 )
 
 // generate jwt token
-func GenerateToken(username string, password string) (tokenString string, err error) {
+func GenerateToken(id int64, username string, password string) (tokenString string, err error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
+	claims["id"] = strconv.FormatInt(id, 10)
 	claims["username"] = username
 	claims["password"] = password
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
@@ -40,6 +42,7 @@ func Auth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		c.Request.Header.Set("id", data.Claims.(jwt.MapClaims)["id"].(string))
 		c.Request.Header.Set("username", data.Claims.(jwt.MapClaims)["username"].(string))
 		c.Next()
 	}

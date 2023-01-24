@@ -23,14 +23,17 @@ func Router() *gin.Engine {
 	router.GET("/ws", func(c *gin.Context) {
 		controllers.WsEndpoint(c.Writer, c.Request)
 	})
-	router.GET("/messages", controllers.GetAllMessage)
 
 	router.GET("/users", controllers.GetAllUsers)
 	router.POST("/register", controllers.Register)
 	router.POST("/login", controllers.Login)
 
+	router.GET("/messages", controllers.GetAllMessage)
 	router.Use(middlewares.Auth())
 	{
+		router.GET("/message", controllers.GetMessageByUser)
+		router.POST("/message", controllers.SendMessage)
+
 		router.GET("/profile", controllers.GetProfile)
 	}
 
